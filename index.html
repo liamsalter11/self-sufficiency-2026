@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self-Sufficiency in Raw Materials — Revised Plate, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ultra&family=Oswald:wght@300;400;500;600&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1EBD9;
+  --paper-edge:#DED5BC;
+  --ink:#1C1A16;
+  --ink-soft:#5A5346;
+  --plate-green:#2C8B47;
+  --plate-green-pale:#2C8B4722;
+  --plate-red:#A33122;
+  --rule:#1C1A16;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper-edge);
+  background-image:radial-gradient(120% 90% at 50% 0%, #EBE3CB 0%, #D9CFB4 100%);
+  color:var(--ink);
+  font-family:"Spectral",Georgia,serif;
+  -webkit-font-smoothing:antialiased;
+  padding:18px 10px 40px;
+}
+.plate{
+  max-width:760px;margin:0 auto;
+  background:var(--paper);
+  background-image:radial-gradient(130% 70% at 50% -10%, #F7F2E4 0%, var(--paper) 55%, #E9E1CB 100%);
+  border:1px solid var(--rule);
+  box-shadow:0 1px 0 var(--paper) inset, 0 14px 34px rgba(40,32,18,.24);
+  padding:26px 16px 20px;
+}
+@media(min-width:640px){ .plate{padding:34px 30px 26px;} }
+
+/* ---------- masthead ---------- */
+.masthead{text-align:center;border-bottom:3px double var(--rule);padding-bottom:16px;}
+h1{
+  font-family:"Ultra",Georgia,serif;
+  font-size:clamp(19px,5.4vw,38px);
+  line-height:1.02;margin:0 0 10px;letter-spacing:-.01em;
+  text-transform:uppercase;
+}
+.thesis{
+  font-family:"Spectral",Georgia,serif;font-style:italic;
+  font-size:clamp(12.5px,3.2vw,15px);line-height:1.5;
+  margin:0 auto 12px;max-width:44ch;color:#2E2A21;
+}
+.stamp{
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:500;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);
+}
+
+/* ---------- plates ---------- */
+.sheet{margin-top:26px;}
+.sheet-head{
+  display:flex;align-items:baseline;gap:9px;
+  border-bottom:1px solid var(--rule);padding-bottom:5px;margin-bottom:2px;
+}
+.sheet-num{
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:600;
+  font-size:10px;letter-spacing:.18em;color:var(--plate-red);white-space:nowrap;
+}
+.sheet-title{
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:500;
+  font-size:clamp(11px,2.9vw,13px);letter-spacing:.15em;text-transform:uppercase;
+}
+.sheet-note{
+  font-family:"Spectral",Georgia,serif;font-style:italic;font-size:11.5px;
+  color:var(--ink-soft);margin:6px 0 0;line-height:1.45;
+}
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:4px;}
+table{border-collapse:collapse;}
+th,td{padding:0;}
+th.corner{background:transparent;}
+th.col{
+  vertical-align:bottom;height:132px;width:28px;min-width:28px;
+}
+th.col span{
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:400;
+  font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  white-space:nowrap;padding-bottom:5px;color:var(--ink);
+}
+th.row{
+  position:sticky;left:0;z-index:2;
+  background:var(--paper);
+  text-align:left;font-weight:400;
+  font-family:"Oswald",Arial Narrow,sans-serif;
+  font-size:11px;letter-spacing:.03em;
+  padding:0 8px 0 0;width:88px;min-width:88px;
+  border-right:1px solid rgba(28,26,22,.18);
+}
+@media(min-width:520px){
+  th.row{width:104px;min-width:104px;font-size:12px;}
+  th.col{width:32px;min-width:32px;}
+}
+td.cell{height:30px;text-align:center;vertical-align:middle;cursor:pointer;}
+td.cell svg{display:block;margin:0 auto;}
+tr:hover th.row{color:var(--plate-red);}
+td.cell.is-active svg circle.hit{fill:rgba(163,49,34,.10);}
+
+/* pie load animation */
+.pie{transform-origin:center;animation:bloom .5s cubic-bezier(.2,.8,.3,1) both;}
+@keyframes bloom{from{opacity:0;transform:scale(.55);}to{opacity:1;transform:scale(1);}}
+@media(prefers-reduced-motion:reduce){.pie{animation:none;}}
+
+/* ---------- readout ---------- */
+.readout{
+  position:sticky;bottom:0;z-index:5;margin-top:24px;
+  background:var(--paper);
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  padding:9px 2px;min-height:52px;display:flex;align-items:center;
+}
+.readout p{margin:0;font-size:12.5px;line-height:1.45;}
+.readout .who{
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;font-size:11.5px;
+}
+.readout .val{color:var(--plate-green);font-weight:500;}
+.readout .val.risk{color:var(--plate-red);}
+.readout .idle{color:var(--ink-soft);font-style:italic;}
+.readout .meta{
+  display:block;margin-top:4px;
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:400;
+  font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);
+}
+.readout .meta.untraced{color:var(--plate-red);}
+.readout .meta.partial{color:#8A6A1F;}
+.readout .origin{display:block;margin-top:4px;font-size:11.5px;font-style:italic;color:#2E2A21;}
+.readout .meta a{
+  color:var(--plate-green);text-decoration:none;
+  border-bottom:1px solid rgba(44,139,71,.5);
+}
+.readout .meta a:hover,.readout .meta a:focus{border-bottom-color:var(--plate-green);}
+
+/* ---------- key ---------- */
+.key{margin-top:22px;border-top:3px double var(--rule);padding-top:14px;}
+.key h2{
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:600;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;margin:0 0 10px;
+}
+.key ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;}
+.key li{display:flex;gap:11px;align-items:flex-start;font-size:12px;line-height:1.45;}
+.key li svg{flex:0 0 auto;margin-top:1px;}
+/* ---------- apparatus ---------- */
+.apparatus{margin-top:22px;border-top:3px double var(--rule);padding-top:14px;}
+.apparatus h2{
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:600;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;margin:0 0 10px;
+}
+.method p{font-size:12px;line-height:1.55;margin:0 0 9px;color:#2E2A21;}
+.method p:last-child{margin-bottom:0;}
+.srcgrid{margin-top:18px;display:grid;gap:16px;}
+@media(min-width:600px){.srcgrid{grid-template-columns:1fr 1fr;gap:16px 26px;}}
+.srcgroup h3{
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:500;
+  font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--plate-red);margin:0 0 6px;padding-bottom:4px;
+  border-bottom:1px solid rgba(28,26,22,.22);
+}
+.srcgroup ol{margin:0;padding-left:16px;}
+.srcgroup li{font-size:11.5px;line-height:1.45;margin-bottom:6px;scroll-margin-top:24px;}
+.srcgroup li::marker{color:var(--ink-soft);font-size:10px;}
+.srcgroup li:target{background:rgba(44,139,71,.16);box-shadow:0 0 0 4px rgba(44,139,71,.16);}
+.srcgroup a{color:var(--ink);text-decoration:none;border-bottom:1px solid rgba(44,139,71,.55);}
+.srcgroup a:hover,.srcgroup a:focus{color:var(--plate-green);border-bottom-color:var(--plate-green);}
+.srcgroup .pub{font-style:italic;color:var(--ink-soft);}
+.colophon{
+  margin-top:20px;padding-top:10px;border-top:1px solid rgba(28,26,22,.25);
+  font-family:"Oswald",Arial Narrow,sans-serif;font-weight:300;
+  font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-soft);line-height:1.7;
+}
+</style>
+</head>
+<body>
+<div class="plate">
+
+  <div class="masthead">
+    <h1>Self-Sufficiency in Raw&nbsp;Materials</h1>
+    <p class="thesis">The old plate asked who owns the rock. The red ring asks who owns the chemistry.</p>
+    <div class="stamp">Revised Plate &middot; July 2026</div>
+  </div>
+
+  <div id="sheets"></div>
+
+  <div class="readout" id="readout">
+    <p class="idle">Tap any circle for the figure behind it.</p>
+  </div>
+
+  <div class="key">
+    <h2>Key</h2>
+    <ul>
+      <li>
+        <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" fill="none" stroke="#2C8B47" stroke-width="1.3"/><path d="M13,13 L13,3 A10,10 0 0,1 21.66,18 Z" fill="#2C8B47"/></svg>
+        <span>Green area shows the share of consumption met from domestic supply. A hollow circle means the country depends on imports for essentially all of it.</span>
+      </li>
+      <li>
+        <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" fill="#2C8B47"/><circle cx="13" cy="1.9" r="2.3" fill="#2C8B47"/></svg>
+        <span>Nub on top: surplus supply. The country produces more than it consumes and exports the balance.</span>
+      </li>
+      <li>
+        <svg width="26" height="30" viewBox="0 0 26 27"><circle cx="13" cy="13" r="10" fill="none" stroke="#2C8B47" stroke-width="1.3"/><path d="M13,13 L13,3 A10,10 0 0,1 15.5,22.7 Z" fill="#2C8B47"/><circle cx="13" cy="24.1" r="2.1" fill="none" stroke="#2C8B47" stroke-width="1.15"/></svg>
+        <span>Hollow dot below: the green is largely or wholly <em>recycled</em>, not mined. US antimony and tungsten have no primary production at all &mdash; scrap is the only domestic source. Cobalt is 300 tons primary against 2,000 tons secondary.</span>
+      </li>
+      <li>
+        <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="none" stroke="#A33122" stroke-width="1.3"/><circle cx="13" cy="13" r="10" fill="none" stroke="#2C8B47" stroke-width="1.3"/><path d="M13,13 L13,3 A10,10 0 0,1 18.88,21.09 Z" fill="#2C8B47"/></svg>
+        <span>Red ring: the dependence survives the green. Supply hinges on a foreign refining step, one dominant supplier, or a contested sea lane &mdash; the failure modes the original plate had no way to draw.</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="apparatus">
+    <h2>How to read this &mdash; and how far to trust it</h2>
+    <div class="method">
+      <p>Citations come in three tiers, and the distinction matters more than any count. <strong>Verified</strong> means a specific figure for that country and commodity was read out of the cited document and supports the value shown. <strong>Referenced</strong> means the citation is the standing reference table for that commodity &mdash; a USGS commodity chapter, an annual statistical review, a trade circular &mdash; and covers that country, or conspicuously omits it, which is its own evidence for a low value; the individual percentage was not re-derived from it. <strong>Untraced</strong> means no document stands behind the cell at all. Hovering or tapping any circle says which of the three applies. <strong id="coverage">&nbsp;</strong> Most of this plate is referenced rather than verified, and it should be read that way: the citation tells you where to check, not that the checking was done.</p>
+      <p>Each circle is the share of domestic consumption met from domestic supply, rounded to indicative bands rather than reported to the decimal. Where a source publishes a country as a net exporter, the circle is drawn as a surplus rather than given a number.</p>
+      <p>Columns deliberately mix stages. Copper appears twice, mined and refined, because the difference is the whole point; so do lithium and rare earths. Where a column names a finished good &mdash; magnets, polysilicon, refining capacity &mdash; the circle measures capacity to make it, not ore in the ground.</p>
+      <p>The red ring began as an editorial judgement and is being replaced with sourced import-origin data commodity by commodity. Where USGS publishes leading import sources, hovering the cell now names them and their shares, so the reader can see what the ring rests on. Where it has not yet been replaced, it remains a judgement: It marks cells where the compiler judges the residual dependence to be structural rather than geological: a refining step held abroad, a single dominant supplier, or a sea lane under contest at the time of compilation. Reasonable people would ring a different set.</p>
+      <p>Energy and shipping conditions are those of late July 2026 and are moving fast. Commercial traffic through the Strait of Hormuz has been severely disrupted since late February 2026, with transits falling by more than 90% at the worst point, Iraq declaring force majeure, and dated Brent touching levels not seen since 2008 in the spring before easing back into the $80s by July. China's October 2025 rare-earth controls are suspended, not withdrawn, until 10 November 2026; the separate April 2025 licensing regime was never suspended and remains in force. Both will date this plate faster than anything else on it.</p>
+    </div>
+
+    <h2 style="margin-top:20px;">Sources</h2>
+    <div class="srcgrid">
+
+      <div class="srcgroup">
+        <h3>Plate I &middot; Energy &amp; Fuels</h3>
+        <ol>
+          <li><a href="https://www.energyinst.org/statistical-review">Statistical Review of World Energy 2026</a>. <span class="pub">Energy Institute, 30 June 2026.</span> Per-country oil, gas and coal production and consumption; the spine of this plate.</li>
+          <li><a href="https://ember-energy.org/latest-insights/energy-institute-statistical-review-of-world-energy/">Energy Institute Statistical Review of World Energy 2026</a>, digest. <span class="pub">Ember.</span></li>
+          <li><a href="https://world-nuclear.org/information-library/nuclear-fuel-cycle/mining-of-uranium/world-uranium-mining-production">World Uranium Mining Production</a>. <span class="pub">World Nuclear Association.</span></li>
+          <li><a href="https://pubs.usgs.gov/publication/fs20253057/full">Uranium&mdash;Deposits, Production and Resources</a>, Fact Sheet 2025-3057. <span class="pub">USGS.</span></li>
+          <li><a href="https://statbase.org/datasets/energy/oil-refining-capacity/">Oil refining capacity by country</a>. <span class="pub">Statbase.</span></li>
+          <li><a href="https://www.consilium.europa.eu/en/infographics/where-does-the-eu-s-gas-come-from/">Where does the EU's gas come from?</a> <span class="pub">Council of the European Union.</span></li>
+          <li><a href="https://energy.ec.europa.eu/strategy/repowereu-phase-out-russian-energy-imports_en">REPowerEU &mdash; phase-out of Russian energy imports</a>. <span class="pub">European Commission.</span></li>
+          <li><a href="https://www.enecho.meti.go.jp/en/category/whitepaper/pdf/2025_outline.pdf.pdf">Energy White Paper 2025</a>. <span class="pub">METI / Agency for Natural Resources and Energy, Japan.</span></li>
+          <li><a href="https://eneken.ieej.or.jp/data/12320.pdf">Economic and Energy Outlook of Japan for FY2025</a>. <span class="pub">Institute of Energy Economics, Japan.</span></li>
+          <li><a href="https://www.ey.com/en_in/insights/tax/economy-watch/india-s-petroleum-economy-import-dependence-and-unanticipated-shocks">India's petroleum economy: import dependence and unanticipated shocks</a>. <span class="pub">EY India, 2026</span>, drawing on Petroleum Planning &amp; Analysis Cell data.</li>
+          <li><a href="https://www.india-briefing.com/news/indias-oil-supply-hormuz-diversification-strategy-43381.html/">India's oil supply and Hormuz diversification</a>. <span class="pub">India Briefing, March 2026.</span></li>
+          <li><a href="https://www.aljazeera.com/economy/2026/7/14/oil-hits-1-month-high-as-us-iran-fighting-clouds-strait-of-hormuz-outlook">Oil hits one-month high as US&ndash;Iran fighting clouds Hormuz outlook</a>. <span class="pub">Al Jazeera, 14 July 2026.</span></li>
+          <li><a href="https://www.cnbc.com/2026/07/20/oil-prices-today-brent-wti-crude-us-iran-centcom-hormuz.html">Oil market coverage, Strait of Hormuz</a>. <span class="pub">CNBC, 20 July 2026.</span></li>
+          <li><a href="https://www.eia.gov/todayinenergy/detail.php?id=67724">The United States is a major energy exporter and importer, especially for petroleum</a>. <span class="pub">EIA, 2026.</span> US net energy trade reached a record 11 quads of net exports in 2025.</li>
+          <li><a href="https://www.eia.gov/todayinenergy/detail.php?id=67684">The United States set record energy production in 2025, again</a>. <span class="pub">EIA, 2026.</span></li>
+          <li><a href="https://www.eia.gov/about/new/">Domestic uranium production</a>. <span class="pub">EIA, June 2026.</span> US uranium output was 1,388,000 pounds in 2025.</li>
+        </ol>
+      </div>
+
+      <div class="srcgroup">
+        <h3>Plate II &middot; Metals &amp; Industrial Minerals</h3>
+        <ol>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026.pdf">Mineral Commodity Summaries 2026</a>. <span class="pub">USGS, February 2026.</span> Net import reliance and world mine shares, all metals.</li>
+          <li><a href="https://www.sciencebase.gov/catalog/item/696a75d5d4be0228872d3bf8">Mineral Commodity Summaries 2026 Data Release</a>. <span class="pub">USGS National Minerals Information Center.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-iron-ore.pdf">Iron Ore</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://worldsteel.org/media/press-releases/2026/december-2025-crude-steel-production-2025-global-crude-steel-production/">December 2025 crude steel production; 2025 global totals</a>. <span class="pub">World Steel Association, January 2026.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-bauxite-alumina.pdf">Bauxite and Alumina</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://tass.com/economy/2074309">Global primary aluminium output, 2025</a>. <span class="pub">International Aluminium Institute data, via TASS, January 2026.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-copper.pdf">Copper</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://icsg.org">World Copper Factbook 2025</a>. <span class="pub">International Copper Study Group.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-nickel.pdf">Nickel</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-zinc.pdf">Zinc</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-tungsten.pdf">Tungsten</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-antimony.pdf">Antimony</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+        </ol>
+      </div>
+
+      <div class="srcgroup">
+        <h3>Plate III &middot; Battery, Magnet &amp; Chip Materials</h3>
+        <ol>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-lithium.pdf">Lithium</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://www.iea.org/reports/global-critical-minerals-outlook-2025/overview-of-outlook-for-key-minerals">Global Critical Minerals Outlook 2025</a>. <span class="pub">International Energy Agency.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-cobalt.pdf">Cobalt</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-graphite.pdf">Graphite</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-rare-earths.pdf">Rare Earths</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://www.iea.org/reports/rare-earth-elements/executive-summary">Rare Earth Elements</a>. <span class="pub">IEA, 2025.</span></li>
+          <li><a href="https://www.iea.org/data-and-statistics/charts/china-s-share-in-rare-earth-magnet-production-2024">China's share in rare earth magnet production, 2024</a>, chart. <span class="pub">IEA.</span></li>
+          <li><a href="https://www.csis.org/analysis/beyond-rare-earths-chinas-growing-threat-gallium-supply-chains">Beyond Rare Earths: China's Growing Threat to Gallium Supply Chains</a>. <span class="pub">CSIS.</span></li>
+          <li><a href="https://www.stimson.org/2025/chinas-germanium-and-gallium-export-restrictions-consequences-for-the-united-states/">China's Germanium and Gallium Export Restrictions</a>. <span class="pub">Stimson Center.</span></li>
+          <li><a href="https://www.cirs-group.com/en/chemicals/us-export-controls-eased-restrictions-on-gallium-germanium-ultra-hard-materials-graphite-and-others-relaxed">MOFCOM Announcement No. 72 of 2025</a>, summarised. <span class="pub">CIRS Group.</span></li>
+          <li><a href="https://www.spglobal.com/energy/en/news-research/latest-news/metals/012726-rare-earth-supply-bottlenecks-set-to-persist-in-2026">Rare earth supply bottlenecks set to persist in 2026</a>. <span class="pub">S&amp;P Global Commodity Insights.</span></li>
+          <li><a href="https://www.semiconductors.org/wp-content/uploads/2026/03/FINAL-SIA-Comments-USTR-Critical-Minerals-RFI.pdf">Comments to USTR on critical minerals</a>, March 2026. <span class="pub">Semiconductor Industry Association.</span></li>
+          <li><a href="https://www.pv-magazine.com/2025/11/25/china-dominates-global-polysilicon-capacity-says-bernreuter-research/">China dominates global polysilicon capacity</a>. <span class="pub">Bernreuter Research, via pv magazine, November 2025.</span></li>
+          <li><a href="https://www.eia.gov/todayinenergy/detail.php?id=65305">China dominates global trade of battery minerals</a>. <span class="pub">U.S. Energy Information Administration.</span></li>
+          <li><a href="https://www.isi.fraunhofer.de/en/blog/themen/batterie-update/lithium-ionen-batterien-rohstoffe-quellen-weltweit-globaler-markt.html">Global raw materials sources for lithium-ion batteries</a>. <span class="pub">Fraunhofer ISI, 2026.</span></li>
+          <li><a href="https://ourworldindata.org/countries-critical-minerals-needed-energy-transition">Which countries have the critical minerals needed for the energy transition?</a> <span class="pub">Our World in Data.</span></li>
+        </ol>
+      </div>
+
+      <div class="srcgroup">
+        <h3>Plate IV &middot; Food &amp; Farm Inputs</h3>
+        <ol>
+          <li><a href="https://apps.fas.usda.gov/psdonline/circulars/grain.pdf">Grain: World Markets and Trade</a>. <span class="pub">USDA Foreign Agricultural Service.</span></li>
+          <li><a href="https://apps.fas.usda.gov/psdonline/circulars/oilseeds.pdf">Oilseeds: World Markets and Trade</a>. <span class="pub">USDA Foreign Agricultural Service.</span></li>
+          <li><a href="https://www.usda.gov/oce/commodity/wasde/">World Agricultural Supply and Demand Estimates</a>, May 2026. <span class="pub">USDA.</span></li>
+          <li><a href="https://apps.fas.usda.gov/psdonline/circulars/livestock_poultry.pdf">Livestock and Poultry: World Markets and Trade</a>. <span class="pub">USDA Foreign Agricultural Service.</span></li>
+          <li><a href="https://www.seafoodsource.com/news/supply-trade/global-seafood-production-availability-reach-record-levels-but-challenges-to-growth-persist-fao-s-latest-sofia-report-highlights">Global seafood production reaches record levels</a>, coverage of SOFIA 2026. <span class="pub">SeafoodSource, June 2026.</span></li>
+          <li><a href="https://openknowledge.fao.org/server/api/core/bitstreams/0c79f9df-b2eb-43cb-9b84-977efea5b197/content">Food Outlook &mdash; fertilizer market update</a>. <span class="pub">FAO, June 2025.</span></li>
+          <li><a href="https://www.ifpri.org/blog/global-fertilizer-trade-2021-2023-what-happened-after-war-related-price-spikes/">Global fertilizer trade, 2021&ndash;2023</a>. <span class="pub">IFPRI.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-phosphate-rock.pdf">Phosphate Rock</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-potash.pdf">Potash</a>, MCS 2026 commodity chapter. <span class="pub">USGS.</span></li>
+          <li><a href="https://cepa.org/article/the-next-critical-mineral-battle-potash-and-phosphate/">The Next Critical Mineral Battle: Potash and Phosphate</a>. <span class="pub">Center for European Policy Analysis.</span></li>
+          <li><a href="https://investingnews.com/daily/resource-investing/agriculture-investing/potash-investing/top-potash-countries-by-production/">Top potash countries by production</a> and <a href="https://investingnews.com/daily/resource-investing/agriculture-investing/phosphate-investing/top-phosphate-countries-by-production/">top phosphate countries by production</a>. <span class="pub">Investing News Network</span>, compiled from USGS.</li>
+          <li><a href="https://farmdocdaily.illinois.edu/2025/02/tariff-threats-and-us-fertilizer-imports.html">Tariff Threats and US Fertilizer Imports</a>. <span class="pub">farmdoc daily, University of Illinois.</span></li>
+          <li><a href="https://www.japantimes.co.jp/news/2025/10/10/japan/food-self-sufficiency-rate/">Japan's food self-sufficiency rate remains at 38%</a>. <span class="pub">Japan Times, October 2025</span>, reporting MAFF figures.</li>
+          <li><a href="https://viacampesina.org/en/2025/02/south-korea-declining-food-self-sufficiency-rates-linked-to-loss-of-farmland/">South Korea's declining food self-sufficiency</a>, citing MAFRA data. <span class="pub">La Via Campesina, February 2025.</span></li>
+          <li><a href="https://agriculture.ec.europa.eu/media/news/eu-agri-food-exports-reach-record-levels-eur2354-billion-2024-2025-04-08_en">EU agri-food exports reach record levels, &euro;235.4 billion in 2024</a>. <span class="pub">European Commission, DG-AGRI, April 2025.</span></li>
+          <li><a href="https://www.gov.uk/government/statistics/agriculture-in-the-united-kingdom-2024/chapter-14-the-food-chain">Agriculture in the United Kingdom 2024</a>, Chapter 14: The Food Chain. <span class="pub">Defra.</span></li>
+          <li><a href="https://chinapower.csis.org/china-food-security/">China's Food Security</a>. <span class="pub">CSIS ChinaPower.</span></li>
+          <li><a href="https://ers.usda.gov/sites/default/files/_laserfiche/outlooks/113912/AES-135.pdf?v=62685">Outlook for U.S. Agricultural Trade, February 2026</a> (AES-135). <span class="pub">USDA Economic Research Service and Foreign Agricultural Service.</span></li>
+          <li><a href="https://www.ers.usda.gov/data-products/ag-and-food-statistics-charting-the-essentials/agricultural-trade">Ag and Food Statistics: Agricultural Trade</a>. <span class="pub">USDA Economic Research Service.</span></li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="colophon">
+    Compiled July 2026. Design and structure after &ldquo;Self-Sufficiency in Raw Materials,&rdquo; an atlas plate prepared by C. S. Hammond &amp; Co., Inc., New York, in the 1950s. The country roster, the commodity columns, the red ring and all values here are new; nothing is reproduced from the original.
+  </div>
+
+</div>
+
+<script>
+const ROWS = ["United States","Canada","European Union","United Kingdom","Russia","China","India","Japan","South Korea","Brazil","Australia","Indonesia"];
+
+const SHEETS = [
+{
+  num:"Plate I", title:"Energy & Fuels",
+  note:"Every red ring in this block traces to one of two places: the Strait of Hormuz, or a pipeline the buyer no longer wants to admit to.",
+  cols:["Crude oil","Natural gas","Coal","Uranium (mined)","Refining capacity"],
+  data:[
+    ["105","130","120","3r","105"],
+    ["130","125","110","130","95"],
+    ["8r","15r","50","2r","95"],
+    ["45","45","5","0","65"],
+    ["130","130","130","90","125"],
+    ["27r","55","92","25r","115"],
+    ["10r","45","75r","30","115"],
+    ["0r","2r","0r","0","90"],
+    ["0r","0r","1r","0","120"],
+    ["125","65","10","20","80"],
+    ["25r","130","130","130","25r"],
+    ["45","110","130","0","70"]
+  ]
+},
+{
+  num:"Plate II", title:"Metals & Industrial Minerals",
+  note:"The only two columns the 1950s plate would recognise as strategic are the last two &mdash; and both are now Chinese.",
+  cols:["Iron ore","Steel","Bauxite","Aluminium","Copper (mine)","Copper (refined)","Nickel","Zinc","Tungsten","Antimony"],
+  data:[
+    ["130","82","10","40","45","43r","10","80r","0r","9r"],
+    ["130","80","0","130","130","130","130","110","30","10"],
+    ["20","90","10","45","25","55","25","40","25","5r"],
+    ["0","40","0","5","0","0","0","5","5","0r"],
+    ["130","120","30","130","130","120","130","130","90","60"],
+    ["20r","130","45r","130","15r","90r","8r","60","130","120"],
+    ["130","100","100","100","5","80","0","110","0r","0r"],
+    ["0r","110","0","0","0","110","0","60","0r","0r"],
+    ["0r","115","0","0","0","90","0","110","5r","0r"],
+    ["130","110","130","110","60","40","120","50","30","0"],
+    ["130","60","130","130","130","130","130","130","40","60"],
+    ["10","90","120","50","130","120","130","10","0","0"]
+  ]
+},
+{
+  num:"Plate III", title:"Battery, Magnet & Chip Materials",
+  note:"Not one of these columns appeared on the original. Read the China row across and you have the whole argument of the last decade.",
+  cols:["Lithium (mine)","Lithium (refined)","Cobalt","Graphite","Rare earths (mine)","Rare earths (separated)","Rare-earth magnets","Gallium & germanium","Polysilicon"],
+  data:[
+    ["15","5r","20r","0r","130","33r","5r","0r","90r"],
+    ["20","5r","20r","5r","5r","0r","0r","5r","0r"],
+    ["5r","15r","30r","5r","0r","5r","8r","12r","40r"],
+    ["0r","0r","0r","0r","0r","0r","0r","0r","0r"],
+    ["5","10","60","30","5","15","10","20","10"],
+    ["60r","130","5r","130","130","130","130","130","130"],
+    ["0r","5r","0r","5r","20","8r","2r","0r","5r"],
+    ["0r","5r","15r","0r","0r","12r","60","10r","60r"],
+    ["0r","20r","25r","0r","0r","0r","10r","0r","30r"],
+    ["40","5r","5r","60","20","0r","0r","0r","10r"],
+    ["130","15r","60","5r","120","30","0r","0r","0r"],
+    ["0r","5r","120","0r","0r","0r","0r","0r","0r"]
+  ]
+},
+{
+  num:"Plate IV", title:"Food & Farm Inputs",
+  note:"Fertiliser is where food security stops being agricultural and becomes geological.",
+  cols:["Wheat","Maize","Rice","Soybeans","Meat","Fish","Nitrogen fert.","Phosphate","Potash","Food, all calories"],
+  data:[
+    ["130","130","120","130","110","65","80","84","8r","120"],
+    ["130","95","0","120","130","110","110","0r","130","125"],
+    ["115","85","70","5r","110","45","80","10r","55","95"],
+    ["85","15","0","0r","80","60","45","0r","60","60"],
+    ["130","115","90","60","100","130","130","130","130","110"],
+    ["95","92","100","15r","92","110","105","130","45r","80"],
+    ["100","100","130","95","105","105","75","10r","0r","100"],
+    ["15r","0r","99","6r","55","55","5r","0r","0r","38"],
+    ["1r","1r","95","10r","65","70","10r","0r","0r","35"],
+    ["45","130","100","130","130","60","20r","40","5r","130"],
+    ["130","90","80","40","130","60","25r","20","0r","130"],
+    ["0r","85","95","10r","90","120","90","15r","0r","85"]
+  ]
+}];
+
+const NOTES = {
+
+
+"United States|Zinc":"Verified. USGS flags the US a net exporter of zinc concentrate (E) while refined net import reliance sits at 73% — 670 kt mined, only 220 kt refined against 820 kt consumed. Mines the rock, imports the metal.",
+"United States|Aluminium":"Verified. Net import reliance 60%; primary output 660 kt against apparent consumption 5.70 Mt. Six smelters, two of them idle since 2022 and 2024.",
+"China|Nickel":"Verified and corrected from 15. USGS: 120 kt mined against stainless-driven consumption above 1.5 Mt — under a tenth self-supplied. Refines a great deal of Indonesia\u2019s.",
+"China|Zinc":"Verified and corrected from 90. 4.1 Mt mined against roughly 7 Mt of refined consumption.",
+"Brazil|Aluminium":"Corrected from 60. USGS: 1.2 Mt of smelter output against domestic consumption near 1.0 Mt.",
+"Russia|Zinc":"Corrected from 80. Mine output rose to 430 kt in 2025 against consumption near 250 kt.",
+"Australia|Nickel":"Verified surplus, but the margin narrowed hard: USGS puts 2025 output down 54% as multiple mines went into care and maintenance on low prices.",
+"United States|Rare earths (mine)":"Verified and corrected from 60 — the largest single error found so far. USGS lists rare-earth MINERAL CONCENTRATES among commodities for which the US is a net exporter. Mountain Pass ships more ore than the country consumes.",
+"United States|Rare earths (separated)":"Verified and corrected from 15. Net import reliance on rare-earth compounds and metals is 67%, not 85% — a third is now met domestically after Mountain Pass expanded separation capacity in 2025 and a Louisiana separator moved toward commercial scale. Still the chokepoint, but a narrowing one.",
+"United States|Cobalt":"Verified and corrected from 3. Net import reliance is 79%, so about a fifth is domestically supplied — but almost all of that is recycling: 300 t of primary production against 2,000 t secondary.",
+"United States|Graphite":"Verified. Net import reliance 100%, zero domestic production, China the leading import source. One of sixteen commodities on which the US is wholly import-dependent.",
+"United States|Tungsten":"Verified. Zero primary production. USGS notes recycling is the only domestic source of supply, alongside antimony, bismuth, chromium, magnesium metal, tin and vanadium.",
+"United States|Antimony":"Verified at 9% (net import reliance 91%). Mining restarted in 2025 at Stibnite Hill in Montana with another mine under construction in Idaho — the first significant US antimony mining since 2001.",
+"United States|Steel":"Verified and corrected from 75. USGS places iron and steel among commodities with net import reliance under 20%.",
+"United States|Phosphate":"Verified and corrected from 95. Net import reliance is 16%, so about 84% domestic — phosphate rock was added to the US critical minerals list in November 2025.",
+"United States|Nitrogen fert.":"Verified and corrected from 75. USGS places fixed nitrogen-ammonia among commodities with net import reliance under 20%.",
+"United States|Gallium & germanium":"Verified. Zero primary production of either. Gallium net import reliance is 100%, germanium above 50%. Beijing banned exports of both to the US in December 2024; germanium metal prices rose 106% in 2025.",
+"United States|Uranium (mined)":"Verified and corrected from 5. EIA puts 2025 domestic output at 1,388,000 pounds against reactor requirements near 50 million pounds. The gap was papered over by Russian feedstock for two decades.",
+"United States|Natural gas":"Verified. EIA: dry gas production 105.9 bcf/d against consumption 91.3 bcf/d in 2025, with LNG exports at a record.",
+"United States|Crude oil":"Verified. US net energy trade hit a record 11 quads of net exports in 2025, with petroleum 63% of all energy exports. Shale reversed the 1950s picture entirely.",
+"United States|Coal":"Verified. Production 512 million short tons in 2025 — the lowest since 1964 — but roughly a quarter is exported. A shrinking surplus is still a surplus.",
+"United States|Food, all calories":"Verified on a calorie basis, but read the footnote. USDA forecasts FY2026 agricultural exports of $176.5bn against imports of $205.5bn — a $29bn deficit, and a structural break from nearly 60 years of surplus. The US still exports bulk calories (corn, wheat, soybeans, rice) and imports value (fruit, vegetables, coffee, seafood). Change the unit and this cell inverts.",
+"United States|Soybeans":"Verified net exporter, but the trend runs the wrong way: FY2026 export volume is forecast near 1.53 billion bushels, down about 344 million from FY2025, as Brazil takes share and Chinese demand stays below its peak.",
+"United States|Fish":"The one US cell still unverified. Commonly cited figures put imports at 70-85% of seafood consumed, but that double-counts US-caught fish exported for processing and re-imported. Treat this circle as the softest on the row.",
+"United States|Copper (mine)":"Verified and corrected from 60. USGS: mine output 1.00 Mt against apparent refined consumption 2.20 Mt — mining covers about 45%, not 60%.",
+"United States|Copper (refined)":"Verified. Net import reliance 57% in 2025, up sharply from 45% in 2024 as both primary smelters went down for maintenance. Mines respectably, smelts poorly.",
+"United States|Bauxite":"Verified and corrected from zero. USGS withholds the production figure but puts net import reliance above 75%, so domestic supply is small rather than nil — bauxitic clay in Alabama, Arkansas and Georgia, almost all of it non-metallurgical.",
+"Canada|Copper (mine)":"Corrected to surplus. USGS: 500 kt mined and 320 kt refined against domestic consumption of roughly 200 kt. The original figure understated a clear net-export position.",
+"China|Bauxite":"Verified and corrected from 25. USGS: 87 Mt mined against 93 Mt of alumina output, which needs roughly 186 Mt of bauxite — about 45% self-supplied. Aluminium dominance still rests on Guinean rock, but less thinly than the first draft implied.",
+"China|Copper (refined)":"Corrected from surplus. China refines 14.0 Mt of a 29.0 Mt world total, but consumes more than it refines and imports the balance. Dominant refiner, still a net importer.",
+"Australia|Copper (refined)":"Corrected to surplus. 460 kt refined against domestic consumption near 150 kt.",
+"United States|Tungsten":"No domestic mine production at all. China refines roughly four-fifths of world supply.",
+"United States|Iron ore":"Corrected and verified: USGS lists net import reliance as E (net exporter) for all five years to 2025. Production 38.0 Mt against apparent consumption 37.0 Mt, exports 7.8 Mt against imports 4.0 Mt. The 1950s instinct to assume import dependence doesn't hold here.",
+"United States|Antimony":"Domestic mining restarted in 2025 after China's export ban, from a base of nearly zero.",
+"United States|Rare earths (mine)":"Mountain Pass is real ore at real scale. It is also the ceiling of US mining capacity.",
+"United States|Rare earths (separated)":"The actual chokepoint. Ore has historically been shipped to China for separation and shipped back.",
+
+"United States|Polysilicon":"Genuine domestic polysilicon capacity — then the wafers are cut in Asia. The chain breaks one step downstream.",
+"United States|Potash":"Verified. Net import reliance 92%, with Canada, Russia and Israel the leading sources. A friendly dependence is still a dependence.",
+"Canada|Potash":"More than a third of world production, out of Saskatchewan. The single largest structural surplus on this plate.",
+"Canada|Uranium (mined)":"Athabasca grades are unmatched. One of the very few Western surpluses in the nuclear fuel chain.",
+"European Union|Natural gas":"Russian share fell from about 45% of imports before 2022 to roughly 12% in 2025; the statutory phase-out runs through 2027.",
+"European Union|Nitrogen fert.":"One of the world's largest fertiliser exporters by value, and still a net importer of nitrogen and ammonia. The value sits in formulation, not in the feedstock.",
+"European Union|Soybeans":"Essentially all imported, overwhelmingly from Brazil and the United States.",
+"European Union|Phosphate":"Almost entirely imported, historically with a large Russian and Belarusian component the Commission has flagged as structural.",
+"European Union|Polysilicon":"Wacker keeps a European foothold. It is the exception that proves the rule across this row.",
+"United Kingdom|Steel":"The North Sea windfall came and went, and so did primary steelmaking. Virgin blast-furnace capacity has effectively ended.",
+"United Kingdom|Food, all calories":"Roughly 60% self-supplied. Comfortable by 1950s standards, thin by any island's.",
+"Russia|Wheat":"The largest wheat exporter on earth. This is the row's real weapon, more than the gas column.",
+"Russia|Nitrogen fert.":"Cheap stranded gas converted into ammonia. Energy and food leverage are the same asset.",
+"China|Crude oil":"Produces roughly a quarter of what it burns, and much of the rest transits Hormuz then Malacca.",
+"China|Iron ore":"The great asymmetry: the world's steel mill imports about four-fifths of its ore, mostly from Australia and Brazil.",
+
+"China|Nickel":"Barely mines nickel. Refines a great deal of Indonesia's.",
+"China|Tungsten":"Roughly 80% of world refining, and under export licence since 2025.",
+"China|Lithium (mine)":"Mines a real share but still imports spodumene from Australia and Africa to feed its converters.",
+"China|Lithium (refined)":"The converter capacity is the asset, not the brine.",
+"China|Rare earths (separated)":"Verified: China accounted for 270 kt of an estimated 390 kt world mine production in 2025 — 69% — but processes up to 90% of global supply. The gap between those two numbers is the entire strategic story.",
+"China|Rare-earth magnets":"Where separation becomes leverage. Motors, drones, guidance sets, turbines all terminate here.",
+"China|Gallium & germanium":"Close to the entire world's refined supply, both under export licence since 2023.",
+"China|Soybeans":"Imports the overwhelming majority, chiefly from Brazil. The most exposed cell in the Chinese row.",
+"China|Potash":"Under half self-supplied, buying heavily from Canada, Russia and Belarus.",
+"India|Crude oil":"Import dependence passed 90% in FY26 as domestic output kept falling. Refining capacity is the offsetting strength.",
+"India|Coal":"Thermal coal is abundant; coking coal for steel is largely imported.",
+"India|Uranium (mined)":"Revised down on the July pass because domestic mining plainly covers a minority of reactor fuel, with the balance under supply deals dating to the 2008 NSG waiver. The specific figure is an estimate, not a sourced number — treat it as the weakest cell in this row.",
+"India|Potash":"No domestic production. Every kilogram is bought abroad.",
+"India|Rice":"The dominant exporter, with the export restrictions to match.",
+"Japan|Crude oil":"Primary energy self-sufficiency sits near 18%, still well below pre-2011 levels.",
+"Japan|Rare-earth magnets":"The one significant non-Chinese magnet industry. Which is precisely why it was targeted by the 2026 controls.",
+"Japan|Food, all calories":"38% on a calorie basis, unchanged for four straight years. Rice is near total; almost nothing else is.",
+"Japan|Aluminium":"Primary smelting ended decades ago. Japan buys metal, not power.",
+"South Korea|Refining capacity":"Imports every barrel and exports refined product. Self-sufficiency in the process, not the resource.",
+"South Korea|Zinc":"A world-scale smelting position built on wholly imported concentrate.",
+"South Korea|Gallium & germanium":"Building refining capacity alongside Germany and Kazakhstan — the closest thing to a non-Chinese alternative currently under construction.",
+"South Korea|Food, all calories":"Around a third by calories, with rice carrying nearly all of it.",
+"Brazil|Soybeans":"The commodity that reorganised world agriculture, and China's single largest agricultural exposure.",
+"Brazil|Nitrogen fert.":"Feeds the world and imports roughly four-fifths of the fertiliser to do it. The hinge of the Brazilian row.",
+"Australia|Refining capacity":"Exports coal, gas and uranium in bulk while importing most of its own transport fuel. Two refineries remain.",
+"Australia|Lithium (mine)":"The largest mined supply on earth. The conversion plants that would capture the value keep stalling.",
+"Australia|Rare earths (separated)":"Lynas at Kalgoorlie is the most substantial separation capacity outside China, and it is still small.",
+"Indonesia|Nickel":"Built by banning raw ore exports and forcing smelters onshore. The clearest deliberate move up this chart in twenty years.",
+"Indonesia|Cobalt":"Now the world's second cobalt source, entirely as a by-product of the nickel build-out.",
+"Indonesia|Nitrogen fert.":"A net exporter of urea specifically, but a net importer of fertiliser overall once phosphate and potash are counted in. The two don't move together.",
+"Indonesia|Coal":"The largest thermal coal exporter, with periodic domestic-market obligations that rattle buyers."
+};
+
+const RISK_TEXT = "Dependence survives the green — refining, a single supplier, or a contested sea lane.";
+const G="#2C8B47", R="#A33122";
+const CHECKED = "23 Jul 2026";
+
+/* Cells where domestic supply is substantially or wholly secondary (recycled)
+   rather than mined. USGS: recycling is the ONLY domestic source for antimony,
+   bismuth, chromium, magnesium metal, tin, tungsten and vanadium. */
+const RECYCLED = [ {}, {"United States":[8,9]}, {"United States":[2]}, {} ];
+
+/* Leading import sources, USGS Figure 2 / Figure 3A (2021-24 shares).
+   These make the red ring sourced rather than editorial. */
+const ORIGINS = {
+"United States|Graphite":"100% import reliant. Sources: China 46%, Canada, Mozambique 13%, Mexico.",
+"United States|Gallium & germanium":"Gallium 100% import reliant (Canada, Japan, China, Germany); germanium above 50% (Belgium 41%, China 23%, Canada 17%, Germany).",
+"United States|Rare earths (separated)":"67% import reliant. Sources: China 71%, Malaysia 13%, Estonia 5%, Japan 5%.",
+"United States|Cobalt":"79% import reliant. Sources: Norway 26%, Finland 16%, Canada 14%, Japan 14%.",
+"United States|Tungsten":"Above 50% import reliant. Sources: China 26%, Bolivia 8%, Vietnam 8%.",
+"United States|Antimony":"91% import reliant. Sources: China 55%, Belgium, Thailand 8%, India 6%.",
+"United States|Potash":"92% import reliant. Sources: Canada 79%, Russia 12%.",
+"United States|Copper (refined)":"57% import reliant. Sources: Chile 68%, Canada 16%, Peru 7%, Mexico 6%.",
+"United States|Aluminium":"60% import reliant. Sources: Canada 56%, United Arab Emirates 8%, Bahrain, China.",
+"United States|Zinc":"Net exporter of concentrate; refined 73% import reliant. Sources: Canada 56%, Mexico 15%, Peru 9%, Republic of Korea 7%.",
+"United States|Bauxite":"Above 75% import reliant. Sources: Jamaica 60%, Turkey 16%, Guyana 9%, Australia 8%.",
+"United States|Lithium (mine)":"Above 50% import reliant. Sources: Chile 54%, Argentina 43%.",
+"United States|Nickel":"41% import reliant including scrap; near 100% excluding it. Sources: Canada 44%, Norway 11%, Australia 8%, Brazil 7%."
+};
+
+/* Provenance tiers.
+   VERIFIED: a specific figure for this country and commodity was read out of
+   the cited document and supports the value shown.
+   REFERENCED: the cited document is the standing reference table for this
+   commodity and covers this country (or conspicuously omits it, which is its
+   own evidence). The individual percentage was NOT re-derived from it.
+   Column defaults are REFERENCED unless listed in `verified`. */
+const SRCMAP = [
+  { // Plate I — Energy & Fuels
+    cols:{0:[1],1:[1],2:[1],3:[3,4],4:[5]},
+    verified:{"United States":[0,1,2,3,4]},
+    overrides:{
+      "United States":{0:[59],1:[59,60],2:[59,60],3:[61],4:[59]},
+      "European Union":{0:[1,12,13],1:[1,6,7],2:[1]},
+      "China":{0:[1,12,13]},
+      "India":{0:[1,10,11,12,13],4:[5,10,11]},
+      "Japan":{0:[1,8,9],1:[1,8,9],2:[1,8,9],4:[5,8,9]},
+      "South Korea":{0:[1,12,13]}
+    }
+  },
+  { // Plate II — Metals & Industrial Minerals
+    cols:{0:[16],1:[17],2:[18],3:[18,19],4:[20],5:[20,21],6:[22],7:[23],8:[24],9:[25]},
+    verified:{
+      "United States":[0,1,2,3,4,5,6,7,8,9],"Canada":[0,2,3,4,5,6],"European Union":[0,2,4,5],
+      "United Kingdom":[0,2,3,4,6,7],"Russia":[0,3,4,5,6,7],"China":[0,2,3,4,5,6,7],
+      "India":[0,2,3,4,5,6,7],"Japan":[0,2,3,4,5,6],"South Korea":[0,2,3,4,5,6],
+      "Brazil":[0,2,3,6],"Australia":[0,2,3,4,5,6,7],"Indonesia":[2,4,5,6,7]
+    },
+    overrides:{
+      "United States":{0:[14,16]},
+      "China":{8:[24,35,36]}
+    }
+  },
+  { // Plate III — Battery, Magnet & Chip Materials
+    cols:{0:[26],1:[26,27],2:[28],3:[29],4:[30],5:[30,31],6:[32],7:[33,34],8:[38]},
+    verified:{"China":[4,5],"United States":[2,3,4,5,7]},
+    overrides:{
+      "United States":{5:[30,31,37],7:[33,34,37]},
+      "China":{5:[30,31,35,36],6:[32,35],7:[33,34,35]},
+      "European Union":{7:[33,34]},
+      "South Korea":{7:[33,34]}
+    }
+  },
+  { // Plate IV — Food & Farm Inputs
+    cols:{0:[42,44],1:[42,44],2:[42,44],3:[43,44],4:[45],5:[46],6:[47,48],7:[49,51,52],8:[50,51,52],9:[42,43,45]},
+    verified:{"United States":[0,1,2,3,4,6,7,8,9]},
+    overrides:{
+      "United States":{0:[42,44],1:[42,44],2:[42,44],3:[43,44],4:[45,62],5:[46],6:[14],7:[14,49],8:[14,50],9:[62,63]},
+      "Japan":{9:[54]},
+      "South Korea":{9:[55]},
+      "European Union":{9:[56]},
+      "United Kingdom":{9:[57]},
+      "China":{9:[58]}
+    }
+  }
+];
+
+function pie(v, risk, i, recycled){
+  const val = Math.min(v,100), surplus = v>100;
+  const r=10, cx=13, cy=13;
+  let inner="";
+  if(val>=99.9){
+    inner=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${G}"/>`;
+  } else if(val>0.4){
+    const a=val*3.6*Math.PI/180;
+    const x=cx+r*Math.sin(a), y=cy-r*Math.cos(a);
+    inner=`<path d="M${cx},${cy} L${cx},${cy-r} A${r},${r} 0 ${val>50?1:0},1 ${x.toFixed(2)},${y.toFixed(2)} Z" fill="${G}"/>`;
+  }
+  const ring = risk?`<circle cx="${cx}" cy="${cy}" r="12.2" fill="none" stroke="${R}" stroke-width="1.15"/>`:"";
+  const nub  = surplus?`<circle cx="${cx}" cy="1.9" r="2.3" fill="${G}"/>`:"";
+  const rec  = recycled?`<circle cx="${cx}" cy="24.1" r="2.1" fill="none" stroke="${G}" stroke-width="1.15"/>`:"";
+  const delay = Math.min(i*11, 520);
+  return `<svg class="pie" width="28" height="30" viewBox="0 0 26 27" style="animation-delay:${delay}ms" aria-hidden="true">
+    <circle class="hit" cx="${cx}" cy="${cy}" r="12.6" fill="transparent"/>
+    ${ring}<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${G}" stroke-width="1.15"/>${inner}${nub}${rec}
+  </svg>`;
+}
+
+let n=0, verified=0, referenced=0, total=0;
+const host=document.getElementById("sheets");
+SHEETS.forEach((sh,si)=>{
+  const sec=document.createElement("section");
+  sec.className="sheet";
+  let html=`<div class="sheet-head"><span class="sheet-num">${sh.num}</span><span class="sheet-title">${sh.title}</span></div>
+  <p class="sheet-note">${sh.note}</p><div class="scroller"><table><thead><tr><th class="corner"></th>`;
+  sh.cols.forEach(c=>{html+=`<th class="col"><span>${c}</span></th>`;});
+  html+=`</tr></thead><tbody>`;
+  ROWS.forEach((country,ri)=>{
+    html+=`<tr><th class="row" scope="row">${country}</th>`;
+    sh.data[ri].forEach((raw,ci)=>{
+      const risk=raw.endsWith("r");
+      const v=parseInt(raw,10);
+      const plateMap = SRCMAP[si]||{cols:{},overrides:{},verified:{}};
+      const src = ((plateMap.overrides||{})[country]||{})[ci] || (plateMap.cols||{})[ci] || [];
+      const isVerified = ((plateMap.verified||{})[country]||[]).indexOf(ci) !== -1;
+      const isRecycled = ((RECYCLED[si]||{})[country]||[]).indexOf(ci) !== -1;
+      total++; if(isVerified) verified++; else if(src.length) referenced++;
+      html+=`<td class="cell" tabindex="0" data-c="${country}" data-m="${sh.cols[ci]}" data-v="${v}" data-r="${risk?1:0}" data-s="${src.join(',')}" data-t="${isVerified?'v':(src.length?'f':'n')}" data-rec="${isRecycled?1:0}">${pie(v,risk,n++,isRecycled)}</td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  sec.innerHTML=html;
+  host.appendChild(sec);
+});
+
+/* number the source list continuously across all four groups */
+let sn=0;
+document.querySelectorAll(".srcgroup ol").forEach(ol=>{
+  ol.setAttribute("start", sn+1);
+  ol.querySelectorAll(":scope > li").forEach(li=>{ sn++; li.id="src-"+sn; });
+});
+
+document.getElementById("coverage").textContent =
+  `Of ${total} cells, ${verified} have been verified against a specific figure in the cited document; ${referenced} carry a reference that covers the commodity but whose individual percentage has not been re-derived; ${total-verified-referenced} carry no citation at all.`;
+
+const out=document.getElementById("readout");
+let active=null;
+function show(td){
+  if(active) active.classList.remove("is-active");
+  active=td; td.classList.add("is-active");
+  const c=td.dataset.c, m=td.dataset.m, v=+td.dataset.v, risk=td.dataset.r==="1";
+  const src=td.dataset.s?td.dataset.s.split(","):[];
+  const surplus=v>100;
+  const shown=surplus?"surplus":v+"%";
+  const note=NOTES[c+"|"+m] || (risk?RISK_TEXT:"");
+  const origin=ORIGINS[c+"|"+m]||"";
+  const recNote=td.dataset.rec==="1"?"Domestic supply here is largely or wholly recycled rather than mined.":"";
+  let meta;
+  const tier=td.dataset.t;
+  if(src.length){
+    const links=src.map(s=>`<a href="#src-${s}">${s}</a>`).join(", ");
+    const label = tier==="v"
+      ? `Verified against source${src.length>1?"s":""} ${links}`
+      : `Reference${src.length>1?"s":""} ${links} &mdash; figure not re-derived`;
+    meta=`<span class="meta${tier==="v"?"":" partial"}">${label} &middot; checked ${CHECKED}</span>`;
+  } else {
+    meta=`<span class="meta untraced">Not traced to a source &mdash; compiler's estimate. Verify before citing.</span>`;
+  }
+  const extra=[origin,recNote].filter(Boolean).map(t=>`<span class="origin">${t}</span>`).join("");
+  out.innerHTML=`<p><span class="who">${c} &middot; ${m}</span> &mdash; <span class="val${risk?" risk":""}">${shown}</span>${surplus?" &middot; net exporter":""}${note?"<br>"+note:""}${extra}${meta}</p>`;
+}
+document.querySelectorAll("td.cell").forEach(td=>{
+  td.addEventListener("mouseenter",()=>show(td));
+  td.addEventListener("click",()=>show(td));
+  td.addEventListener("focus",()=>show(td));
+});
+</script>
+</body>
+</html>

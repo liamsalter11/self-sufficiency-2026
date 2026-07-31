@@ -1,0 +1,40 @@
+name: Sync to liamsalter11.github.io
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout self-sufficiency-2026
+        uses: actions/checkout@v4
+        with:
+          path: self-sufficiency-2026
+
+      - name: Checkout liamsalter11.github.io
+        uses: actions/checkout@v4
+        with:
+          repository: liamsalter11/liamsalter11.github.io
+          token: ${{ secrets.SITE_DEPLOY_TOKEN }}
+          path: site
+
+      - name: Sync files into site/self-sufficiency-2026
+        run: |
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            self-sufficiency-2026/ site/self-sufficiency-2026/
+
+      - name: Commit and push if changed
+        run: |
+          cd site
+          git config user.name "self-sufficiency-2026 sync"
+          git config user.email "actions@users.noreply.github.com"
+          git add self-sufficiency-2026
+          if git diff --cached --quiet; then
+            echo "No changes to sync."
+          else
+            git commit -m "Sync self-sufficiency-2026@${GITHUB_SHA::7}"
+            git push
+          fi
